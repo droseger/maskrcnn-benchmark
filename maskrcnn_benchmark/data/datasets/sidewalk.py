@@ -6,15 +6,16 @@ from maskrcnn_benchmark.structures.segmentation_mask import SegmentationMask
 
 
 class Sidewalk(CocoDetection):
-    def __init__(self, root, annFile, transforms=None):
-        super(Sidewalk, self).__init__(root, annFile, transforms)
+    def __init__(self, ann_file, root, transforms=None):
+        super(Sidewalk, self).__init__(root, ann_file)      
+        self.id_to_img_map = {k: v for k, v in enumerate(self.ids)}
         self.transforms = transforms
 
     def __getitem__(self, index):
         img, anno = super(Sidewalk, self).__getitem__(index)
 
         boxes = [obj["bbox"] for obj in anno]
-        boxes = torch.as_tensor(boxes).reshape(-1, 4)
+        boxes = torch.as_tensor(boxes).reshape(-1, 4)  # guard against no boxes
         target = BoxList(boxes, img.size, mode="xywh").convert("xyxy")
 
         classes = [obj["category_id"] for obj in anno]
@@ -31,3 +32,8 @@ class Sidewalk(CocoDetection):
             img, target = self.transforms(img, target)
 
         return img, target, index
+        
+    def get_img_info(self, index):
+        img_id = self.id_to_img_map[index]
+        img_data = self.coco.imgs[img_id]
+        return img_data

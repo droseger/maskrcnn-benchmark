@@ -105,15 +105,15 @@ class DatasetCatalog(object):
             "ann_file": "cityscapes/annotations/instancesonly_filtered_gtFine_test.json"
         },
         "sidewalk_train": {
-            "img_dir": "sidewalk/JPEGImages",
+            "img_dir": "sidewalk",
             "ann_file": "sidewalk/annotations_train.json"
         },
         "sidewalk_val": {
-            "img_dir": "sidewalk/JPEGImages",
+            "img_dir": "sidewalk",
             "ann_file": "sidewalk/annotations_val.json"
         },
         "sidewalk_test": {
-            "img_dir": "sidewalk/JPEGImages",
+            "img_dir": "sidewalk",
             "ann_file": "sidewalk/annotations_test.json"
         }
     }
