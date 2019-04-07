@@ -7,7 +7,14 @@ from maskrcnn_benchmark.structures.segmentation_mask import SegmentationMask
 
 class Sidewalk(CocoDetection):
     def __init__(self, ann_file, root, transforms=None):
-        super(Sidewalk, self).__init__(root, ann_file)      
+        super(Sidewalk, self).__init__(root, ann_file)
+
+        self.json_category_id_to_contiguous_id = {
+            v: i + 1 for i, v in enumerate(self.coco.getCatIds())
+        }
+        self.contiguous_category_id_to_json_id = {
+            v: k for k, v in self.json_category_id_to_contiguous_id.items()
+        }
         self.id_to_img_map = {k: v for k, v in enumerate(self.ids)}
         self.transforms = transforms
 
@@ -19,6 +26,7 @@ class Sidewalk(CocoDetection):
         target = BoxList(boxes, img.size, mode="xywh").convert("xyxy")
 
         classes = [obj["category_id"] for obj in anno]
+        classes = [self.json_category_id_to_contiguous_id[c] for c in classes]
         classes = torch.tensor(classes)
         target.add_field("labels", classes)
 
