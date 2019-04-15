@@ -4,6 +4,8 @@ MODEL:
   BACKBONE:
     CONV_BODY: "R-50-FPN"
   RESNETS:
+    TRANS_FUNC: "BottleneckWithGN" # default: BottleneckWithFixedBatchNorm
+    STEM_FUNC: "StemWithGN" # default: StemWithFixedBatchNorm
     BACKBONE_OUT_CHANNELS: 256
   RPN:
     USE_FPN: True
