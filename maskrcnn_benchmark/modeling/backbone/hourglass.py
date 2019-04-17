@@ -30,9 +30,10 @@ class HourglassNet(nn.Module):
             self.stack.append(name)
 
     def forward(self, x):
+        x = x[0]
         for hg in self.stack:
             x = getattr(self, hg)(x)
-        return x
+        return [x]
 
 
 
