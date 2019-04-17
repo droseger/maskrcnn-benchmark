@@ -6,6 +6,7 @@ from torch import nn
 from maskrcnn_benchmark.modeling import registry
 from maskrcnn_benchmark.modeling.make_layers import conv_with_kaiming_uniform
 from . import fpn as fpn_module
+from . import hourglass
 from . import resnet
 
 
@@ -44,6 +45,14 @@ def build_resnet_fpn_backbone(cfg):
     model.out_channels = out_channels
     return model
 
+@registry.BACKBONES.register("R-50-HGN")
+def build_resnet_fpn_backbone(cfg):
+    body = resnet.ResNet(cfg)
+    out_channels = cfg.MODEL.RESNETS.RES2_OUT_CHANNELS * 8
+    hgn = hourglass.HourglassNet(cfg, out_channels)
+    model = nn.Sequential(OrderedDict([("body", body), ("hgn", hgn)]))
+    model.out_channels = out_channels
+    return model
 
 @registry.BACKBONES.register("R-50-FPN-RETINANET")
 @registry.BACKBONES.register("R-101-FPN-RETINANET")
