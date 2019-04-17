@@ -11,6 +11,7 @@ from maskrcnn_benchmark.layers import BatchNorm2d
 from maskrcnn_benchmark.modeling.make_layers import group_norm
 from maskrcnn_benchmark.utils.registry import Registry
 
+
 class HourglassNet(nn.Module):
     """ Stacked Hourglass Network. """
     def __init__(self, cfg, in_channels):
@@ -36,7 +37,6 @@ class HourglassNet(nn.Module):
         return [x]
 
 
-
 class Hourglass(nn.Module):
     def __init__(self, cfg, hg_depth, in_channels):
         super(Hourglass, self).__init__()
@@ -47,17 +47,17 @@ class Hourglass(nn.Module):
         # Number of consecutive residual modules at each depth level
         num_modules = cfg.MODEL.HGN.NUM_MODULES
 
-        self.res1 = nn.Sequential(
-            *[residual_module(in_channels, in_channels) for _ in range(num_modules)]
-        )
-        self.res2 = nn.Sequential(
-            *[residual_module(in_channels, in_channels) for _ in range(num_modules)]
-        )
-        self.res3 = nn.Sequential(
-            *[residual_module(in_channels, in_channels) for _ in range(num_modules)]
-        )
+        self.modules = []
 
-        # Construct Hourglass with Recursion
+        for i in range(1, 4):
+            name = "depth" + str(hg_depth) + "_res" + str(i)
+            module = nn.Sequential(
+                *[residual_module(in_channels, in_channels) for _ in range(num_modules)]
+            )
+            self.add_module(name, module)
+            self.modules.append(name)
+
+        # Construct hourglass waist recursively
         self.waist = (
             Hourglass(cfg, hg_depth - 1, in_channels) if hg_depth > 1
             else nn.Sequential(
@@ -66,10 +66,10 @@ class Hourglass(nn.Module):
         )
 
     def forward(self, x):
-        up1 = self.res1(x)
-        low1 = nn.MaxPool2d(kernel_size=2, stride=2)(self.res2(x))
+        up1 = getattr(self, self.modules[0])(x)
+        low1 = nn.MaxPool2d(kernel_size=2, stride=2)(getattr(self, self.modules[1])(x))
         low2 = self.waist(low1)
-        up2 = nn.UpsamplingNearest2d(scale_factor=2)(self.res3(low2))
+        up2 = nn.UpsamplingNearest2d(scale_factor=2)(getattr(self, self.modules[2])(low2))
         return up1 + up2
 
 
