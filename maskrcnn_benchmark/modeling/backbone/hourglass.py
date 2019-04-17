@@ -69,7 +69,7 @@ class Hourglass(nn.Module):
         up1 = getattr(self, self.modules[0])(x)
         low1 = nn.MaxPool2d(kernel_size=2, stride=2)(getattr(self, self.modules[1])(x))
         low2 = self.waist(low1)
-        up2 = nn.UpsamplingNearest2d(scale_factor=2)(getattr(self, self.modules[2])(low2))
+        up2 = F.interpolate(getattr(self, self.modules[2])(low2), size=(up1.shape[2], up1.shape[3]))
         return up1 + up2
 
 
@@ -87,6 +87,7 @@ class BaseResidual(nn.Module):
         input = self.skip(x)
         x = self.conv_block(x)
         x += input
+        return x
 
 
 class ResidualWithBN(BaseResidual):
