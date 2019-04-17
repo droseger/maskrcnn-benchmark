@@ -106,11 +106,12 @@ _C.MODEL.FPN.USE_RELU = False
 # ---------------------------------------------------------------------------- #
 # HourglassNet options
 # ---------------------------------------------------------------------------- #
-_C.MODEL.HOURGLASSNET = CN()
-_C.MODEL.HOURGLASSNET.NUM_STACK = 1
-_C.MODEL.HOURGLASSNET.HG_DEPTH = 3
+_C.MODEL.HGN = CN()
+_C.MODEL.HGN.NUM_STACK = 1
+_C.MODEL.HGN.NUM_MODULES = 1
+_C.MODEL.HGN.HG_DEPTH = 3
 # Original design uses BatchNorm
-_C.MODEL.HOURGLASSNET.RES_FUNC = "ResidualWithBN"
+_C.MODEL.HGN.RES_FUNC = "ResidualWithBN"
 
 
 # ---------------------------------------------------------------------------- #

@@ -16,10 +16,10 @@ class HourglassNet(nn.Module):
     def __init__(self, cfg, in_channels):
         super(HourglassNet, self).__init__()
 
-        hg_depth = cfg.MODEL.HOURGLASSNET.HG_DEPTH
+        hg_depth = cfg.MODEL.HGN.HG_DEPTH
 
         # Number of stacked hourglass modules
-        num_stack = cfg.MODEL.HOURGLASSNET.NUM_STACK
+        num_stack = cfg.MODEL.HGN.NUM_STACK
 
         self.stack = []
 
@@ -41,10 +41,10 @@ class Hourglass(nn.Module):
         super(Hourglass, self).__init__()
 
         # Translate string name to implementation
-        residual_module = _RESIDUAL_MODULES[cfg.MODEL.HOURGLASSNET.RES_FUNC]
+        residual_module = _RESIDUAL_MODULES[cfg.MODEL.HGN.RES_FUNC]
 
         # Number of consecutive residual modules at each depth level
-        num_modules = cfg.MODEL.HOURGLASSNET.NUM_MODULES
+        num_modules = cfg.MODEL.HGN.NUM_MODULES
 
         self.res1 = nn.Sequential(
             *[residual_module(in_channels, in_channels) for _ in range(num_modules)]
