@@ -17,24 +17,45 @@ class HourglassNet(nn.Module):
     def __init__(self, cfg, in_channels):
         super(HourglassNet, self).__init__()
 
+        # Number of HourglassStack modules
+        self.num_stacks = 4 if "FPN" in cfg.MODEL.BACKBONE.CONV_BODY else 1
+
+        self.modules = []
+
+        for i in range(self.num_stacks):
+            name = "stack" + str(i)
+            module = HourglassStack(cfg, in_channels * 2**i)
+            self.add_module(name, module)
+            self.modules.append(name)
+
+    def forward(self, x):
+        assert self.num_stacks == len(x)
+        for i in range(self.num_stacks):
+            x[i] = getattr(self, self.modules[i])(x[i])
+        return x
+
+
+class HourglassStack(nn.Module):
+    def __init__(self, cfg, in_channels):
+        super(HourglassStack, self).__init__()
+
         hg_depth = cfg.MODEL.HGN.HG_DEPTH
 
-        # Number of stacked hourglass modules
-        num_stack = cfg.MODEL.HGN.NUM_STACK
+        # Number of hourglass modules in stack
+        size_stack = cfg.MODEL.HGN.SIZE_STACK
 
         self.stack = []
 
-        for i in range(num_stack):
+        for i in range(size_stack):
             name = "hg" + str(i)
             module = Hourglass(cfg, hg_depth, in_channels)
             self.add_module(name, module)
             self.stack.append(name)
 
     def forward(self, x):
-        x = x[0]
         for hg in self.stack:
             x = getattr(self, hg)(x)
-        return [x]
+        return x
 
 
 class Hourglass(nn.Module):
@@ -69,7 +90,10 @@ class Hourglass(nn.Module):
         up1 = getattr(self, self.modules[0])(x)
         low1 = nn.MaxPool2d(kernel_size=2, stride=2)(getattr(self, self.modules[1])(x))
         low2 = self.waist(low1)
-        up2 = F.interpolate(getattr(self, self.modules[2])(low2), size=(up1.shape[2], up1.shape[3]))
+        up2 = F.interpolate(
+            getattr(self, self.modules[2])(low2),
+            size=(up1.shape[2], up1.shape[3])
+        )
         return up1 + up2
 
 

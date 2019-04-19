@@ -45,6 +45,31 @@ def build_resnet_fpn_backbone(cfg):
     model.out_channels = out_channels
     return model
 
+
+@registry.BACKBONES.register("R-50-HGN-FPN")
+def build_resnet_fpn_backbone(cfg):
+    body = resnet.ResNet(cfg)
+    in_channels_stage2 = cfg.MODEL.RESNETS.RES2_OUT_CHANNELS
+    out_channels = cfg.MODEL.RESNETS.BACKBONE_OUT_CHANNELS
+    hgn = hourglass.HourglassNet(cfg, in_channels_stage2)
+    fpn = fpn_module.FPN(
+        in_channels_list=[
+            in_channels_stage2,
+            in_channels_stage2 * 2,
+            in_channels_stage2 * 4,
+            in_channels_stage2 * 8,
+        ],
+        out_channels=out_channels,
+        conv_block=conv_with_kaiming_uniform(
+            cfg.MODEL.FPN.USE_GN, cfg.MODEL.FPN.USE_RELU
+        ),
+        top_blocks=fpn_module.LastLevelMaxPool(),
+    )
+    model = nn.Sequential(OrderedDict([("body", body), ("hgn", hgn), ("fpn", fpn)]))
+    model.out_channels = out_channels
+    return model
+
+
 @registry.BACKBONES.register("R-50-HGN")
 def build_resnet_fpn_backbone(cfg):
     body = resnet.ResNet(cfg)
@@ -53,6 +78,7 @@ def build_resnet_fpn_backbone(cfg):
     model = nn.Sequential(OrderedDict([("body", body), ("hgn", hgn)]))
     model.out_channels = out_channels
     return model
+
 
 @registry.BACKBONES.register("R-50-FPN-RETINANET")
 @registry.BACKBONES.register("R-101-FPN-RETINANET")

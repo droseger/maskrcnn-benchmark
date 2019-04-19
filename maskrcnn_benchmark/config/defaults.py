@@ -107,7 +107,7 @@ _C.MODEL.FPN.USE_RELU = False
 # HourglassNet options
 # ---------------------------------------------------------------------------- #
 _C.MODEL.HGN = CN()
-_C.MODEL.HGN.NUM_STACK = 1
+_C.MODEL.HGN.SIZE_STACK = 1
 _C.MODEL.HGN.NUM_MODULES = 1
 _C.MODEL.HGN.HG_DEPTH = 3
 # Original design uses BatchNorm

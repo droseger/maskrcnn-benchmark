@@ -1,6 +1,5 @@
 /demo/test.jpg
-/log.txt
-/sidewalk_out
+/out
 
 # compilation and distribution
 __pycache__
