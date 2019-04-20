@@ -1,23 +1,30 @@
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
-  WEIGHT: "catalog://ImageNetPretrained/MSRA/R-50"
+  WEIGHT: "/home/daniel.rose/maskrcnn-benchmark/models/R-50_coco.pth"
   BACKBONE:
-    CONV_BODY: "R-50-FPN"
+    CONV_BODY: "R-50-HGN-FPN"
+  HGN:
+    INPUT_STAGES: [3] # feed only the smallest stage to HGN
+    STACK_SIZE_FOR_STAGES: [1] # for this stage, use stack size 1
+    NUM_MODULES_FOR_STAGES: [1] # for this stage, use 1 consecutive module at each depth level
+    HG_DEPTH_FOR_STAGES: [2] # for this stage, use hg with depth 2
+    RES_FUNC: "ResidualWithGN"
+  FPN:
+    USE_GN: True
   RESNETS:
-    TRANS_FUNC: "BottleneckWithGN" # default: BottleneckWithFixedBatchNorm
-    STEM_FUNC: "StemWithGN" # default: StemWithFixedBatchNorm
     BACKBONE_OUT_CHANNELS: 256
   RPN:
     USE_FPN: True
-    ANCHOR_STRIDE: (4, 8, 16, 32, 64)
+    ANCHOR_STRIDE: (4, 8, 16, 32, 64) # adjust according to model
     PRE_NMS_TOP_N_TRAIN: 2000
     PRE_NMS_TOP_N_TEST: 1000
     POST_NMS_TOP_N_TEST: 1000
+    FPN_POST_NMS_TOP_N_TRAIN: 1000  # 1000 * IMS_PER_BATCH
     FPN_POST_NMS_TOP_N_TEST: 1000
   ROI_HEADS:
     USE_FPN: True
   ROI_BOX_HEAD:
-    NUM_CLASSES: 14 # See json. No_Classes + background (_background_ doesn't count)
+    NUM_CLASSES: 14 # See annotations. number of classes + background
     POOLER_RESOLUTION: 7
     POOLER_SCALES: (0.25, 0.125, 0.0625, 0.03125)
     POOLER_SAMPLING_RATIO: 2
@@ -38,11 +45,12 @@ DATASETS:
 DATALOADER:
   SIZE_DIVISIBILITY: 32
 SOLVER:
-  IMS_PER_BATCH: 2
-  BASE_LR: 0.0025
+  IMS_PER_BATCH: 1
+  BASE_LR: 0.00125
   WEIGHT_DECAY: 0.0001
-  STEPS: (480000, 640000)
-  MAX_ITER: 720000
+  STEPS: (960000, 1280000)
+  MAX_ITER: 1440000
+  CHECKPOINT_PERIOD: 360000 # MAX_ITER / 4
 TEST:
   IMS_PER_BATCH: 1
-OUTPUT_DIR: "./sidewalk_out"
+OUTPUT_DIR: "./out/coco.hgn.fpn.gn.bs1"

@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Inference")
     parser.add_argument(
         "--config-file",
-        default="/home/daniel.rose/maskrcnn-benchmark/configs/coco_mask_rcnn_R_50_FPN_GN_BS1.yaml",
+        default="/home/daniel.rose/maskrcnn-benchmark/configs/coco.fpn.bs1.yaml",
         metavar="FILE",
         help="path to config file",
     )
