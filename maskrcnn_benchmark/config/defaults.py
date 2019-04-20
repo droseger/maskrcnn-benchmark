@@ -97,21 +97,28 @@ _C.MODEL.BACKBONE.USE_GN = False
 
 
 # ---------------------------------------------------------------------------- #
+# HourglassNet options
+# ---------------------------------------------------------------------------- #
+_C.MODEL.HGN = CN()
+# Backbone body stages to be fed into the HGN. For FPN-backbones,
+# the body (e.g. R-50) outputs 4 stages, otherwise it outputs 1 stage.
+_C.MODEL.HGN.INPUT_STAGES = [0]
+# Number of hourglass modules in stack for the stages in INPUT_STAGES
+_C.MODEL.HGN.STACK_SIZE_FOR_STAGES = [1]
+# Number of consecutive residual modules at each depth level for stages
+_C.MODEL.HGN.NUM_MODULES_FOR_STAGES = [1]
+# Hourglass depth for stages
+_C.MODEL.HGN.HG_DEPTH_FOR_STAGES = [3]
+# Original design uses BatchNorm
+_C.MODEL.HGN.RES_FUNC = "ResidualWithBN"
+
+
+# ---------------------------------------------------------------------------- #
 # FPN options
 # ---------------------------------------------------------------------------- #
 _C.MODEL.FPN = CN()
 _C.MODEL.FPN.USE_GN = False
 _C.MODEL.FPN.USE_RELU = False
-
-# ---------------------------------------------------------------------------- #
-# HourglassNet options
-# ---------------------------------------------------------------------------- #
-_C.MODEL.HGN = CN()
-_C.MODEL.HGN.SIZE_STACK = 1
-_C.MODEL.HGN.NUM_MODULES = 1
-_C.MODEL.HGN.HG_DEPTH = 3
-# Original design uses BatchNorm
-_C.MODEL.HGN.RES_FUNC = "ResidualWithBN"
 
 
 # ---------------------------------------------------------------------------- #

@@ -17,38 +17,50 @@ class HourglassNet(nn.Module):
     def __init__(self, cfg, in_channels):
         super(HourglassNet, self).__init__()
 
-        # Number of HourglassStack modules
-        self.num_stacks = 4 if "FPN" in cfg.MODEL.BACKBONE.CONV_BODY else 1
+        # Backbone body stages to be fed into the HGN. For FPN-backbones,
+        # the body (e.g. R-50) outputs 4 stages, otherwise it outputs 1 stage.
+        self.stages: [int] = cfg.MODEL.HGN.INPUT_STAGES
+        self.num_stages = len(self.stages)
+
+        # Number of hourglass modules in stack
+        stack_size_for_stages: [int] = cfg.MODEL.HGN.STACK_SIZE_FOR_STAGES
+
+        # Number of consecutive residual modules at each depth level
+        num_modules_for_stages: [int] = cfg.MODEL.HGN.NUM_MODULES_FOR_STAGES
+
+        # Number of nested Residuals per Hourglass
+        hg_depth_for_stages: [int] = cfg.MODEL.HGN.HG_DEPTH_FOR_STAGES
 
         self.modules = []
 
-        for i in range(self.num_stacks):
+        for i in range(self.num_stages):
             name = "stack" + str(i)
-            module = HourglassStack(cfg, in_channels * 2**i)
+            module = HourglassStack(
+                cfg,
+                stack_size_for_stages[i],
+                num_modules_for_stages[i],
+                hg_depth_for_stages[i],
+                in_channels * 2**self.stages[i]
+            )
             self.add_module(name, module)
             self.modules.append(name)
 
     def forward(self, x):
-        assert self.num_stacks == len(x)
-        for i in range(self.num_stacks):
-            x[i] = getattr(self, self.modules[i])(x[i])
+        for i in range(self.num_stages):
+            stage = self.stages[i]
+            x[stage] = getattr(self, self.modules[i])(x[stage])
         return x
 
 
 class HourglassStack(nn.Module):
-    def __init__(self, cfg, in_channels):
+    def __init__(self, cfg, stack_size, num_modules, hg_depth, in_channels):
         super(HourglassStack, self).__init__()
-
-        hg_depth = cfg.MODEL.HGN.HG_DEPTH
-
-        # Number of hourglass modules in stack
-        size_stack = cfg.MODEL.HGN.SIZE_STACK
 
         self.stack = []
 
-        for i in range(size_stack):
+        for i in range(stack_size):
             name = "hg" + str(i)
-            module = Hourglass(cfg, hg_depth, in_channels)
+            module = Hourglass(cfg, num_modules, hg_depth, in_channels)
             self.add_module(name, module)
             self.stack.append(name)
 
@@ -59,14 +71,11 @@ class HourglassStack(nn.Module):
 
 
 class Hourglass(nn.Module):
-    def __init__(self, cfg, hg_depth, in_channels):
+    def __init__(self, cfg, num_modules, hg_depth, in_channels):
         super(Hourglass, self).__init__()
 
         # Translate string name to implementation
         residual_module = _RESIDUAL_MODULES[cfg.MODEL.HGN.RES_FUNC]
-
-        # Number of consecutive residual modules at each depth level
-        num_modules = cfg.MODEL.HGN.NUM_MODULES
 
         self.modules = []
 
@@ -80,7 +89,7 @@ class Hourglass(nn.Module):
 
         # Construct hourglass waist recursively
         self.waist = (
-            Hourglass(cfg, hg_depth - 1, in_channels) if hg_depth > 1
+            Hourglass(cfg, num_modules, hg_depth - 1, in_channels) if hg_depth > 1
             else nn.Sequential(
                 *[residual_module(in_channels, in_channels) for _ in range(num_modules)]
             )
