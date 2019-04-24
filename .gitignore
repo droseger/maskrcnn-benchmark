@@ -31,3 +31,9 @@ dist/
 # project dirs
 /datasets
 /models
+/output
+
+/inference
+last_checkpoint
+log.txt
+

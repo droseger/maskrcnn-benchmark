@@ -14,11 +14,12 @@ import torch
 
 from maskrcnn_benchmark.config import cfg
 from maskrcnn_benchmark.data import make_data_loader
+from maskrcnn_benchmark.data.dataset_mode import DatasetMode
+from maskrcnn_benchmark.solver import make_lr_scheduler
+from maskrcnn_benchmark.solver import make_optimizer
 from maskrcnn_benchmark.engine.inference import inference
 from maskrcnn_benchmark.engine.trainer import do_train
 from maskrcnn_benchmark.modeling.detector import build_detection_model
-from maskrcnn_benchmark.solver import make_lr_scheduler
-from maskrcnn_benchmark.solver import make_optimizer
 from maskrcnn_benchmark.utils.checkpoint import DetectronCheckpointer
 from maskrcnn_benchmark.utils.collect_env import collect_env_info
 from maskrcnn_benchmark.utils.comm import synchronize, get_rank
@@ -58,9 +59,14 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
 
     data_loader = make_data_loader(
         cfg,
-        is_train=True,
+        mode=DatasetMode.TRAIN,
         is_distributed=distributed,
         start_iter=arguments["iteration"],
+    )
+    data_loader_val = make_data_loader(
+        cfg,
+        mode=DatasetMode.VALID,
+        is_distributed=distributed,
     )
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
@@ -81,7 +87,8 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
         device,
         checkpoint_period,
         arguments,
-        meters
+        meters,
+        data_loader_val,
     )
 
     return model
@@ -103,7 +110,7 @@ def run_test(cfg, model, distributed):
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
             mkdir(output_folder)
             output_folders[idx] = output_folder
-    data_loaders_val = make_data_loader(cfg, is_train=False, is_distributed=distributed)
+    data_loaders_val = make_data_loader(cfg, mode=DatasetMode.TEST, is_distributed=distributed)
     for output_folder, dataset_name, data_loader_val in zip(output_folders, dataset_names, data_loaders_val):
         inference(
             model,

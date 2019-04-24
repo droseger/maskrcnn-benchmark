@@ -69,6 +69,8 @@ _C.INPUT.COLOR_JITTER_TEST = False
 _C.DATASETS = CN()
 # List of the dataset names for training, as present in paths_catalog.py
 _C.DATASETS.TRAIN = ()
+# List of the dataset names for validating, as present in paths_catalog.py
+_C.DATASETS.VAL = ()
 # List of the dataset names for testing, as present in paths_catalog.py
 _C.DATASETS.TEST = ()
 

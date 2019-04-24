@@ -1,14 +1,15 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 from . import transforms as T
+from maskrcnn_benchmark.data.dataset_mode import DatasetMode
 
 
-def build_transforms(cfg, is_train=True):
+def build_transforms(cfg, mode=DatasetMode.TRAIN):
     # default ColorJitter values
     brightness = 0.0
     contrast = 0.0
     saturation = 0.0
     hue = 0.0
-    if is_train:
+    if mode == DatasetMode.TRAIN:
         min_size = cfg.INPUT.MIN_SIZE_TRAIN
         max_size = cfg.INPUT.MAX_SIZE_TRAIN
         flip_prob = 0.5  # cfg.INPUT.FLIP_PROB_TRAIN
