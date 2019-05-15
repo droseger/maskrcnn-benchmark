@@ -3,22 +3,29 @@ from . import transforms as T
 
 
 def build_transforms(cfg, is_train=True):
+    # default ColorJitter values
+    brightness = 0.0
+    contrast = 0.0
+    saturation = 0.0
+    hue = 0.0
     if is_train:
         min_size = cfg.INPUT.MIN_SIZE_TRAIN
         max_size = cfg.INPUT.MAX_SIZE_TRAIN
         flip_prob = 0.5  # cfg.INPUT.FLIP_PROB_TRAIN
-        brightness = cfg.INPUT.BRIGHTNESS
-        contrast = cfg.INPUT.CONTRAST
-        saturation = cfg.INPUT.SATURATION
-        hue = cfg.INPUT.HUE
+        if cfg.INPUT.COLOR_JITTER_TRAIN:
+            brightness = cfg.INPUT.BRIGHTNESS
+            contrast = cfg.INPUT.CONTRAST
+            saturation = cfg.INPUT.SATURATION
+            hue = cfg.INPUT.HUE
     else:
         min_size = cfg.INPUT.MIN_SIZE_TEST
         max_size = cfg.INPUT.MAX_SIZE_TEST
         flip_prob = 0
-        brightness = 0.0
-        contrast = 0.0
-        saturation = 0.0
-        hue = 0.0
+        if cfg.INPUT.COLOR_JITTER_TEST:
+            brightness = cfg.INPUT.BRIGHTNESS
+            contrast = cfg.INPUT.CONTRAST
+            saturation = cfg.INPUT.SATURATION
+            hue = cfg.INPUT.HUE
 
     to_bgr255 = cfg.INPUT.TO_BGR255
     normalize_transform = T.Normalize(

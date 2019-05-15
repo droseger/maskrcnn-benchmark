@@ -59,6 +59,8 @@ _C.INPUT.BRIGHTNESS = 0.0
 _C.INPUT.CONTRAST = 0.0
 _C.INPUT.SATURATION = 0.0
 _C.INPUT.HUE = 0.0
+_C.INPUT.COLOR_JITTER_TRAIN = False
+_C.INPUT.COLOR_JITTER_TEST = False
 
 
 # -----------------------------------------------------------------------------
