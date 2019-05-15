@@ -24,7 +24,7 @@ MODEL:
   ROI_HEADS:
     USE_FPN: True
   ROI_BOX_HEAD:
-    NUM_CLASSES: 14 # See annotations. number of classes + background
+    NUM_CLASSES: 7 # See annotations. number of classes + background
     POOLER_RESOLUTION: 7
     POOLER_SCALES: (0.25, 0.125, 0.0625, 0.03125)
     POOLER_SAMPLING_RATIO: 2
@@ -50,7 +50,6 @@ SOLVER:
   WEIGHT_DECAY: 0.0001
   STEPS: (960000, 1280000)
   MAX_ITER: 1440000
-  CHECKPOINT_PERIOD: 360000 # MAX_ITER / 4
 TEST:
   IMS_PER_BATCH: 1
-OUTPUT_DIR: "./out/coco.hgn.fpn.gn.bs1"
+OUTPUT_DIR: "./out/sidewalk.hgn.fpn.gn.bs1"
