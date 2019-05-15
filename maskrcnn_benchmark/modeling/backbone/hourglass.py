@@ -117,9 +117,9 @@ class BaseResidual(nn.Module):
         )
 
     def forward(self, x):
-        input = self.skip(x)
+        skip = self.skip(x)
         x = self.conv_block(x)
-        x += input
+        x += skip
         return x
 
 
