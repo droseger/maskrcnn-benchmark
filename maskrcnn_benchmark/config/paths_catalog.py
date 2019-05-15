@@ -105,16 +105,16 @@ class DatasetCatalog(object):
             "ann_file": "cityscapes/annotations/instancesonly_filtered_gtFine_test.json"
         },
         "sidewalk_train": {
-            "img_dir": "sidewalk",
-            "ann_file": "sidewalk/annotations_train.json"
+            "img_dir": "sidewalk/train",
+            "ann_file": "sidewalk/train/annotations.json"
         },
         "sidewalk_val": {
-            "img_dir": "sidewalk",
-            "ann_file": "sidewalk/annotations_val.json"
+            "img_dir": "sidewalk/val",
+            "ann_file": "sidewalk/val/annotations.json"
         },
         "sidewalk_test": {
-            "img_dir": "sidewalk",
-            "ann_file": "sidewalk/annotations_test.json"
+            "img_dir": "sidewalk/test",
+            "ann_file": "sidewalk/test/annotations.json"
         }
     }
 
