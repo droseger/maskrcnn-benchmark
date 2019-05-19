@@ -446,3 +446,6 @@ _C.TEST.DETECTIONS_PER_IMG = 100
 _C.OUTPUT_DIR = "."
 
 _C.PATHS_CATALOG = os.path.join(os.path.dirname(__file__), "paths_catalog.py")
+
+# TensorBoard experiment location
+_C.TENSORBOARD_EXPERIMENT = "logs/maskrcnn-benchmark"
