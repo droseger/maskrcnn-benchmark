@@ -74,8 +74,12 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
         meters = TensorboardLogger(
             log_dir=cfg.TENSORBOARD_EXPERIMENT,
             delimiter="  ")
+        meters_val = TensorboardLogger(
+            log_dir=cfg.TENSORBOARD_EXPERIMENT + "_val",
+            delimiter="  ")
     else:
         meters = MetricLogger(delimiter="  ")
+        meters_val = MetricLogger(delimiter="  ")
 
     do_train(
         model,
@@ -87,6 +91,7 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
         checkpoint_period,
         arguments,
         meters,
+        meters_val,
         data_loader_val,
     )
 

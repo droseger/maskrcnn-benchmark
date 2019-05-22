@@ -45,6 +45,7 @@ def do_train(
     checkpoint_period,
     arguments,
     meters,
+    meters_val,
     data_loader_val=None,
 ):
     logger = logging.getLogger("maskrcnn_benchmark.trainer")
@@ -72,7 +73,7 @@ def do_train(
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_loss_dict(loss_dict)
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
-        meters.update(iteration, loss=losses_reduced, **loss_dict_reduced)
+        meters.update(loss=losses_reduced, **loss_dict_reduced)
 
         optimizer.zero_grad()
         losses.backward()
@@ -80,12 +81,13 @@ def do_train(
 
         batch_time = time.time() - end
         end = time.time()
-        meters.update(iteration, time=batch_time, data=data_time)
+        meters.update(time=batch_time, data=data_time)
 
         eta_seconds = meters.time.global_avg * (max_iter - iteration)
         eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
 
-        if iteration % 20 == 0 or iteration == max_iter:
+        if iteration == 1 or iteration % 20 == 0 or iteration == max_iter:
+            meters.write_tb_log(iteration)
             logger.info(
                 meters.delimiter.join(
                     [
@@ -103,10 +105,7 @@ def do_train(
                     memory=torch.cuda.max_memory_allocated() / 1024.0 / 1024.0,
                 )
             )
-        if iteration % checkpoint_period == 0:
-            checkpointer.save("model_{:07d}".format(iteration), **arguments)
             if data_loader_val is not None:
-                meters_val = MetricLogger(delimiter="  ")
                 synchronize()
                 with torch.no_grad():
                     for idx_val, (images_val, targets_val, _) in enumerate(data_loader_val):
@@ -115,8 +114,9 @@ def do_train(
                         loss_dict = model(images_val, targets_val)
                         loss_dict_reduced = reduce_loss_dict(loss_dict)
                         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
-                        meters_val.update(iteration, loss=losses_reduced, **loss_dict_reduced)
+                        meters_val.update(loss=losses_reduced, **loss_dict_reduced)
                 synchronize()
+                meters_val.write_tb_log(iteration)
                 logger.info(
                     meters_val.delimiter.join(
                         [
@@ -135,6 +135,8 @@ def do_train(
                         memory=torch.cuda.max_memory_allocated() / 1024.0 / 1024.0,
                     )
                 )
+        if iteration % checkpoint_period == 0:
+            checkpointer.save("model_{:07d}".format(iteration), **arguments)
         if iteration == max_iter:
             checkpointer.save("model_final", **arguments)
 

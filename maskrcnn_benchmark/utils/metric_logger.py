@@ -46,8 +46,7 @@ class MetricLogger(object):
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
 
-    def update(self, iteration=0, **kwargs):
-        del iteration
+    def update(self, **kwargs):
         for k, v in kwargs.items():
             if isinstance(v, torch.Tensor):
                 v = v.item()
@@ -69,6 +68,9 @@ class MetricLogger(object):
                 "{}: {:.4f} ({:.4f})".format(name, meter.median, meter.global_avg)
             )
         return self.delimiter.join(loss_str)
+
+    def write_tb_log(self, iteration):
+        pass
 
 
 class TensorboardLogger(MetricLogger):
@@ -96,11 +98,9 @@ class TensorboardLogger(MetricLogger):
         else:
             return None
 
-    def update(self, iteration=0, **kwargs):
-        super(TensorboardLogger, self).update(**kwargs)
-        if self.writer:
-            for k, v in kwargs.items():
-                if isinstance(v, torch.Tensor):
-                    v = v.item()
-                assert isinstance(v, (float, int))
-                self.writer.add_scalar(k, v, iteration)
+    def write_tb_log(self, iteration):
+        for name, meter in self.meters.items():
+            if "loss" in name:
+                self.writer.add_scalar(name + "_avg", meter.avg, iteration)
+                self.writer.add_scalar(name + "_global_avg", meter.global_avg, iteration)
+                self.writer.add_scalar(name + "_median", meter.global_avg, iteration)
