@@ -113,7 +113,6 @@ def do_train(
                         images_val = images_val.to(device)
                         targets_val = [target.to(device) for target in targets_val]
                         loss_dict = model(images_val, targets_val)
-                        losses = sum(loss for loss in loss_dict.values())
                         loss_dict_reduced = reduce_loss_dict(loss_dict)
                         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
                         meters_val.update(loss=losses_reduced, **loss_dict_reduced)
@@ -131,7 +130,7 @@ def do_train(
                     ).format(
                         eta=eta_string,
                         iter=iteration,
-                        meters=str(meters),
+                        meters=str(meters_val),
                         lr=optimizer.param_groups[0]["lr"],
                         memory=torch.cuda.max_memory_allocated() / 1024.0 / 1024.0,
                     )
