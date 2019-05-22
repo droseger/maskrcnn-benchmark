@@ -32,7 +32,8 @@ MODEL:
     SHARE_BOX_FEATURE_EXTRACTOR: False
   MASK_ON: True
 DATASETS:
-  TRAIN: ("sidewalk_train", "sidewalk_val")
+  TRAIN: ("sidewalk_train",)
+  VAL: ("sidewalk_val",)
   TEST: ("sidewalk_test",)
 DATALOADER:
   SIZE_DIVISIBILITY: 32
