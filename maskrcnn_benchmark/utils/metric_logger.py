@@ -46,7 +46,8 @@ class MetricLogger(object):
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
 
-    def update(self, **kwargs):
+    def update(self, iteration=0, **kwargs):
+        del iteration
         for k, v in kwargs.items():
             if isinstance(v, torch.Tensor):
                 v = v.item()
@@ -73,11 +74,9 @@ class MetricLogger(object):
 class TensorboardLogger(MetricLogger):
     def __init__(self,
                  log_dir,
-                 start_iter=0,
                  delimiter='\t'):
 
         super(TensorboardLogger, self).__init__(delimiter)
-        self.iteration = start_iter
         self.writer = self._get_tensorboard_writer(log_dir)
 
     @staticmethod
@@ -97,12 +96,11 @@ class TensorboardLogger(MetricLogger):
         else:
             return None
 
-    def update(self, ** kwargs):
+    def update(self, iteration=0, **kwargs):
         super(TensorboardLogger, self).update(**kwargs)
         if self.writer:
             for k, v in kwargs.items():
                 if isinstance(v, torch.Tensor):
                     v = v.item()
                 assert isinstance(v, (float, int))
-                self.writer.add_scalar(k, v, self.iteration)
-            self.iteration += 1
+                self.writer.add_scalar(k, v, iteration)

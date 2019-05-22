@@ -73,7 +73,6 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
     if use_tensorboard:
         meters = TensorboardLogger(
             log_dir=cfg.TENSORBOARD_EXPERIMENT,
-            start_iter=arguments['iteration'],
             delimiter="  ")
     else:
         meters = MetricLogger(delimiter="  ")
