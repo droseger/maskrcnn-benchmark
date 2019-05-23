@@ -170,7 +170,7 @@ def make_data_loader(cfg, mode=DatasetMode.TRAIN, is_distributed=False, start_it
             collate_fn=collator,
         )
         data_loaders.append(data_loader)
-    if mode != DatasetMode.TEST:
+    if mode != DatasetMode.TEST and mode != DatasetMode.VAL_AP:
         # during training and validation, a single (possibly concatenated) data_loader is returned
         assert len(data_loaders) == 1
         return data_loaders[0]
