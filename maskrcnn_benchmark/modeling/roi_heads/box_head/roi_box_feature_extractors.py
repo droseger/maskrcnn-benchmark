@@ -19,6 +19,7 @@ class ResNet50Conv5ROIFeatureExtractor(nn.Module):
         scales = config.MODEL.ROI_BOX_HEAD.POOLER_SCALES
         sampling_ratio = config.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
         pooler = Pooler(
+            config,
             output_size=(resolution, resolution),
             scales=scales,
             sampling_ratio=sampling_ratio,
@@ -59,6 +60,7 @@ class FPN2MLPFeatureExtractor(nn.Module):
         scales = cfg.MODEL.ROI_BOX_HEAD.POOLER_SCALES
         sampling_ratio = cfg.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
         pooler = Pooler(
+            cfg,
             output_size=(resolution, resolution),
             scales=scales,
             sampling_ratio=sampling_ratio,
@@ -94,6 +96,7 @@ class FPNXconv1fcFeatureExtractor(nn.Module):
         scales = cfg.MODEL.ROI_BOX_HEAD.POOLER_SCALES
         sampling_ratio = cfg.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
         pooler = Pooler(
+            cfg,
             output_size=(resolution, resolution),
             scales=scales,
             sampling_ratio=sampling_ratio,

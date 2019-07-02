@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from maskrcnn_benchmark.layers import ROIAlign
+from maskrcnn_benchmark.layers import ROIPool, ROIAlign
 
 from .utils import cat
 
@@ -52,7 +52,7 @@ class Pooler(nn.Module):
     which is available thanks to the BoxList.
     """
 
-    def __init__(self, output_size, scales, sampling_ratio):
+    def __init__(self, cfg, output_size, scales, sampling_ratio):
         """
         Arguments:
             output_size (list[tuple[int]] or list[int]): output size for the pooled region
@@ -61,12 +61,21 @@ class Pooler(nn.Module):
         """
         super(Pooler, self).__init__()
         poolers = []
-        for scale in scales:
-            poolers.append(
-                ROIAlign(
-                    output_size, spatial_scale=scale, sampling_ratio=sampling_ratio
+
+        if cfg.MODEL.ROI_BOX_HEAD.POOLER_TYPE == "ROIAlign":
+            for scale in scales:
+                poolers.append(
+                    ROIAlign(
+                        output_size, spatial_scale=scale, sampling_ratio=sampling_ratio
+                    )
                 )
-            )
+        else:
+            for scale in scales:
+                poolers.append(
+                    ROIPool(
+                        output_size, spatial_scale=scale
+                    )
+                )
         self.poolers = nn.ModuleList(poolers)
         self.output_size = output_size
         # get the levels in the feature map by leveraging the fact that the network always
@@ -126,6 +135,7 @@ def make_pooler(cfg, head_name):
     scales = cfg.MODEL[head_name].POOLER_SCALES
     sampling_ratio = cfg.MODEL[head_name].POOLER_SAMPLING_RATIO
     pooler = Pooler(
+        cfg,
         output_size=(resolution, resolution),
         scales=scales,
         sampling_ratio=sampling_ratio,
