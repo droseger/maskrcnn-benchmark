@@ -105,6 +105,8 @@ def do_train(
                     memory=torch.cuda.max_memory_allocated() / 1024.0 / 1024.0,
                 )
             )
+
+        if iteration == 1 or iteration % checkpoint_period == 0:
             if data_loader_val is not None:
                 synchronize()
                 with torch.no_grad():
@@ -135,6 +137,7 @@ def do_train(
                         memory=torch.cuda.max_memory_allocated() / 1024.0 / 1024.0,
                     )
                 )
+
         if iteration % checkpoint_period == 0:
             checkpointer.save("model_{:07d}".format(iteration), **arguments)
         if iteration == max_iter:
