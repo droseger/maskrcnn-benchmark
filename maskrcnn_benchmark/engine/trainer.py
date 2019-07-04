@@ -138,7 +138,7 @@ def do_train(
                     )
                 )
 
-        if iteration % checkpoint_period == 0:
+        if iteration % checkpoint_period == 0 and iteration != max_iter:
             checkpointer.save("model_{:07d}".format(iteration), **arguments)
         if iteration == max_iter:
             checkpointer.save("model_final", **arguments)
