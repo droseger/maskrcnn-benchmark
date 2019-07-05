@@ -3,6 +3,8 @@ import sys
 import argparse
 import pickle
 
+import json
+
 print("System Paths:", sys.path)
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -39,10 +41,14 @@ def scatter(server, part, save_dir):
     for i, mode in enumerate(modes):
         its, acc = zip(*(server[mode]))
         # print(its, acc, mode)
+        dict = {"iter": its, "AP": acc}
+        json_path = os.path.join(save_dir, part + ".json")
+        with open(json_path, 'w') as file:
+            json.dump(dict, file, indent=2)
         plt.plot(its, acc, colors[i], label=mode)  # .split("_")[1])
-    plt.title(("Accuracy over Time:"))
-    plt.xlabel("Number of Training Iterations")
-    plt.ylabel("Classification Accuracy")
+    # plt.title(("Average Precision:"))
+    plt.xlabel("Iterationen")
+    plt.ylabel(part)
     plt.legend()
     plt.savefig(file_path, dvi=1000)
     plt.close()

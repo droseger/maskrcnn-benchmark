@@ -47,8 +47,6 @@ def inf(args, cfg):
     _ = checkpointer.load(cfg.MODEL.WEIGHT)
 
     iou_types = ("bbox",)
-    if cfg.MODEL.MASK_ON:
-        iou_types = iou_types + ("segm",)
     output_folders = [None] * len(cfg.DATASETS.VAL)
     dataset_names = cfg.DATASETS.VAL
     print("Dataset Names", dataset_names)
@@ -83,7 +81,7 @@ def inf(args, cfg):
 
 def recordResults(args, cfg):
     home_dir = args.home
-    model_paths = [cfg.MODEL.WEIGHT] + get_model_paths(cfg.OUTPUT_DIR)
+    model_paths = get_model_paths(cfg.OUTPUT_DIR)
     cfg.OUTPUT_DIR = os.path.join(cfg.OUTPUT_DIR, "val")
     if not os.path.exists(cfg.OUTPUT_DIR):
         os.makedirs(cfg.OUTPUT_DIR)
@@ -92,10 +90,6 @@ def recordResults(args, cfg):
         cfg.MODEL.WEIGHT = path
         if "final" in path:
             ite = cfg.SOLVER.MAX_ITER
-        elif "no" in path or "catalog" in path or "R50_coco" in path:
-            ite = 0
-            if "catalog" in path:
-                continue
         else:
             ite = int(path.split("_")[-1].split(".")[0])
         output[ite] = inf(args, cfg)
