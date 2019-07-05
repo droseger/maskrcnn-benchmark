@@ -70,12 +70,13 @@ def train(cfg, local_rank, distributed, use_tensorboard=False):
     )
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
+    learner_name = cfg.OUTPUT_DIR.rsplit('/', 1)[1]
     if use_tensorboard:
         meters = TensorboardLogger(
-            log_dir=cfg.TENSORBOARD_EXPERIMENT,
+            log_dir=cfg.TENSORBOARD_EXPERIMENT + learner_name,
             delimiter="  ")
         meters_val = TensorboardLogger(
-            log_dir=cfg.TENSORBOARD_EXPERIMENT + "_val",
+            log_dir=cfg.TENSORBOARD_EXPERIMENT + learner_name + "_val",
             delimiter="  ")
     else:
         meters = MetricLogger(delimiter="  ")
