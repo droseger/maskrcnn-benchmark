@@ -407,12 +407,12 @@ _STEM_MODULES = Registry({
 
 _STAGE_SPECS = Registry({
     "R-50-C4": ResNet50StagesTo4,
+    "R-50-C4-HGN": ResNet50StagesTo4,
     "R-50-C5": ResNet50StagesTo5,
     "R-101-C4": ResNet101StagesTo4,
     "R-101-C5": ResNet101StagesTo5,
     "R-50-FPN": ResNet50FPNStagesTo5,
     "R-50-HGN-FPN": ResNet50FPNStagesTo5,
-    "R-50-HGN": ResNet50StagesTo5,
     "R-50-FPN-RETINANET": ResNet50FPNStagesTo5,
     "R-101-FPN": ResNet101FPNStagesTo5,
     "R-101-FPN-RETINANET": ResNet101FPNStagesTo5,

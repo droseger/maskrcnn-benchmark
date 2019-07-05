@@ -70,10 +70,10 @@ def build_resnet_fpn_backbone(cfg):
     return model
 
 
-@registry.BACKBONES.register("R-50-HGN")
+@registry.BACKBONES.register("R-50-C4-HGN")
 def build_resnet_fpn_backbone(cfg):
     body = resnet.ResNet(cfg)
-    out_channels = cfg.MODEL.RESNETS.RES2_OUT_CHANNELS * 8
+    out_channels = cfg.MODEL.RESNETS.RES2_OUT_CHANNELS * 4 # stage 4
     hgn = hourglass.HourglassNet(cfg, out_channels)
     model = nn.Sequential(OrderedDict([("body", body), ("hgn", hgn)]))
     model.out_channels = out_channels
