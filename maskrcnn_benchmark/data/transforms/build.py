@@ -12,7 +12,7 @@ def build_transforms(cfg, mode=DatasetMode.TRAIN):
     if mode == DatasetMode.TRAIN:
         min_size = cfg.INPUT.MIN_SIZE_TRAIN
         max_size = cfg.INPUT.MAX_SIZE_TRAIN
-        flip_prob = 0.5  # cfg.INPUT.FLIP_PROB_TRAIN
+        flip_prob = cfg.INPUT.FLIP_PROB_TRAIN
         if cfg.INPUT.COLOR_JITTER_TRAIN:
             brightness = cfg.INPUT.BRIGHTNESS
             contrast = cfg.INPUT.CONTRAST

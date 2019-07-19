@@ -61,6 +61,7 @@ _C.INPUT.SATURATION = 0.0
 _C.INPUT.HUE = 0.0
 _C.INPUT.COLOR_JITTER_TRAIN = False
 _C.INPUT.COLOR_JITTER_TEST = False
+_C.INPUT.FLIP_PROB_TRAIN = 0.5
 
 
 # -----------------------------------------------------------------------------

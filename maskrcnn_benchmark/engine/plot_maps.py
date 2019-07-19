@@ -7,6 +7,7 @@ import json
 
 print("System Paths:", sys.path)
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
 from collections import defaultdict
 
 from maskrcnn_benchmark.config import cfg
@@ -34,7 +35,7 @@ def plot(output, cfg):
 def scatter(server, part, save_dir):
     file_path = os.path.join(save_dir, part + "map.pdf")
 
-    colors = ['r-', 'b', 'g']
+    # colors = ['r-', 'b', 'g']
     modes = list(server.keys())
 
     print("All Training Modes", modes)
@@ -45,11 +46,14 @@ def scatter(server, part, save_dir):
         json_path = os.path.join(save_dir, part + ".json")
         with open(json_path, 'w') as file:
             json.dump(dict, file, indent=2)
-        plt.plot(its, acc, colors[i], label=mode)  # .split("_")[1])
+        plt.plot(its, acc)  # .split("_")[1])
     # plt.title(("Average Precision:"))
+    pylab.rcParams['font.size'] = 11
     plt.xlabel("Iterationen")
-    plt.ylabel(part)
-    plt.legend()
+    if part == 'AP':
+        plt.ylabel(r'AP$_{50 \dots 95}^{box}$')
+    else:
+        plt.ylabel(r'AP$_{50}^{box}$')
     plt.savefig(file_path, dvi=1000)
     plt.close()
     print("SAVED PDF OF RESULTS", file_path)
