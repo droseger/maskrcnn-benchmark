@@ -90,6 +90,18 @@ class ColorJitter(object):
         return image, target
 
 
+class GaussianNoise(object):
+    def __init__(self, level, prob):
+        self.level = level
+        self.prob = prob
+
+    def __call__(self, image, target):
+        if self.level > 0 and random.random() < self.prob:
+            image = image + torch.randn_like(image) * self.level
+            image = torch.clamp(image, 0, 1)
+        return image, target
+
+
 class ToTensor(object):
     def __call__(self, image, target):
         return F.to_tensor(image), target

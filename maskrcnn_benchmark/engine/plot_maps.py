@@ -46,17 +46,17 @@ def scatter(server, part, save_dir):
         json_path = os.path.join(save_dir, part + ".json")
         with open(json_path, 'w') as file:
             json.dump(dict, file, indent=2)
-        plt.plot(its, acc)  # .split("_")[1])
+#        plt.plot(its, acc)  # .split("_")[1])
     # plt.title(("Average Precision:"))
-    pylab.rcParams['font.size'] = 11
-    plt.xlabel("Iterationen")
-    if part == 'AP':
-        plt.ylabel(r'AP$_{50 \dots 95}^{box}$')
-    else:
-        plt.ylabel(r'AP$_{50}^{box}$')
-    plt.savefig(file_path, dvi=1000)
-    plt.close()
-    print("SAVED PDF OF RESULTS", file_path)
+#    pylab.rcParams['font.size'] = 11
+#    plt.xlabel("Iterationen")
+#    if part == 'AP':
+#        plt.ylabel(r'AP$_{50 \dots 95}^{box}$')
+#    else:
+#        plt.ylabel(r'AP$_{50}^{box}$')
+#    plt.savefig(file_path, dvi=1000)
+#    plt.close()
+#    print("SAVED PDF OF RESULTS", file_path)
 
 
 def getCGF(args):
